@@ -44,10 +44,6 @@ src/main/
 │   │   ├── MovieEntity.java
 │   │   ├── ReviewEntity.java
 │   │   └── Role.java                 USER / ADMIN enum
-│   ├── exception/
-│   │   ├── EntityNotFoundException.java
-│   │   ├── FileUploadException.java
-│   │   └── UnauthorizedException.java
 │   ├── interceptor/
 │   │   ├── LoginInterceptor.java     비로그인 요청 차단 (redirect URL 보존)
 │   │   └── AdminInterceptor.java     비ADMIN 요청 차단
