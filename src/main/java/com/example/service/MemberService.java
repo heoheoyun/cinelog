@@ -19,9 +19,12 @@ public class MemberService {
 	private final MemberRepository memberRepository;
 	private final ReviewRepository reviewRepository;
 
-	// 회원가입
-	public void register(MemberDto dto) {
+	// 회원가입 (중복 아이디 시 false 반환)
+	public boolean register(MemberDto dto) {
+		if (memberRepository.existsByUsername(dto.getUsername()))
+			return false;
 		memberRepository.save(dto.toEntity());
+		return true;
 	}
 
 	// 아이디 + 비밀번호로 회원 조회 (로그인 검증)

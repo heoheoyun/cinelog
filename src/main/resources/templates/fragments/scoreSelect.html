@@ -2,18 +2,18 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
 
-<!--
+	<!--
   사용법:
     작성 (선택값 없음): th:replace="~{fragments/scoreSelect :: scoreSelect(null)}"
     수정 (선택값 있음): th:replace="~{fragments/scoreSelect :: scoreSelect(${review.score})}"
 -->
-<th:block th:fragment="scoreSelect(selected)">
-    <option value="5" th:selected="${selected == 5}">★★★★★ 5점</option>
-    <option value="4" th:selected="${selected == 4}">★★★★☆ 4점</option>
-    <option value="3" th:selected="${selected == 3}">★★★☆☆ 3점</option>
-    <option value="2" th:selected="${selected == 2}">★★☆☆☆ 2점</option>
-    <option value="1" th:selected="${selected == 1}">★☆☆☆☆ 1점</option>
-</th:block>
+	<th:block th:fragment="scoreSelect(selected)">
+		<option value="5" th:selected="${selected == 5}">★★★★★ 5점</option>
+		<option value="4" th:selected="${selected == 4}">★★★★☆ 4점</option>
+		<option value="3" th:selected="${selected == 3}">★★★☆☆ 3점</option>
+		<option value="2" th:selected="${selected == 2}">★★☆☆☆ 2점</option>
+		<option value="1" th:selected="${selected == 1}">★☆☆☆☆ 1점</option>
+	</th:block>
 
 </body>
 </html>

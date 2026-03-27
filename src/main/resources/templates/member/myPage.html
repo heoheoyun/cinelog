@@ -3,96 +3,100 @@
 <head th:replace="~{fragments/head :: head('내 정보')}"></head>
 <body>
 
-<header th:replace="~{fragments/siteHeader :: headerWithNav}"></header>
+	<header th:replace="~{fragments/siteHeader :: headerWithNav}"></header>
 
-<div class="container">
-    <h1 class="page-title">MY PAGE</h1>
+	<div class="container">
+		<h1 class="page-title">MY PAGE</h1>
 
-    <div th:if="${param.edited != null}" class="alert alert-success">변경 사항이 저장되었습니다.</div>
-    <div th:if="${param.pwError != null}" class="alert alert-error">현재 비밀번호가 올바르지 않습니다.</div>
+		<div th:if="${param.edited != null}" class="alert alert-success">변경
+			사항이 저장되었습니다.</div>
+		<div th:if="${param.pwError != null}" class="alert alert-error">현재
+			비밀번호가 올바르지 않습니다.</div>
 
-    <div class="mypage-layout">
+		<div class="mypage-layout">
 
-        <div class="mypage-sidebar">
+			<div class="mypage-sidebar">
 
-            <div class="card profile-card">
-                <div class="profile-avatar" th:text="${#strings.substring(member.nickname, 0, 1)}">닉</div>
-                <div class="profile-name" th:text="${member.nickname}">닉네임</div>
-                <div class="profile-id text-muted text-sm" th:text="'@' + ${member.username}">@아이디</div>
-                <div class="profile-role">
-                    <span class="role-badge"
-                          th:classappend="${member.role == 'ADMIN'} ? 'role-admin' : 'role-user'"
-                          th:text="${member.role}">USER</span>
-                </div>
-            </div>
+				<div class="card profile-card">
+					<div class="profile-avatar"
+						th:text="${#strings.substring(member.nickname, 0, 1)}">닉</div>
+					<div class="profile-name" th:text="${member.nickname}">닉네임</div>
+					<div class="profile-id text-muted text-sm"
+						th:text="'@' + ${member.username}">@아이디</div>
+					<div class="profile-role">
+						<span class="role-badge"
+							th:classappend="${member.role.name() == 'ADMIN'} ? 'role-admin' : 'role-user'"
+							th:text="${member.role.name()}">USER</span>
+					</div>
+				</div>
 
-            <div class="card mt-16">
-                <h3 class="mypage-section-title">닉네임 변경</h3>
-                <form th:action="@{/member/edit/nickname}" method="post">
-                    <div class="form-group">
-                        <label>새 닉네임</label>
-                        <input type="text" name="nickname" th:value="${member.nickname}" required maxlength="20">
-                    </div>
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-primary btn-sm">저장</button>
-                    </div>
-                </form>
-            </div>
+				<div class="card mt-16">
+					<h3 class="mypage-section-title">닉네임 변경</h3>
+					<form th:action="@{/member/edit/nickname}" method="post">
+						<div class="form-group">
+							<label>새 닉네임</label> <input type="text" name="nickname"
+								th:value="${member.nickname}" required maxlength="20">
+						</div>
+						<div class="form-actions">
+							<button type="submit" class="btn btn-primary btn-sm">저장</button>
+						</div>
+					</form>
+				</div>
 
-            <div class="card mt-16">
-                <h3 class="mypage-section-title">비밀번호 변경</h3>
-                <form th:action="@{/member/edit/password}" method="post">
-                    <div class="form-group">
-                        <label>현재 비밀번호</label>
-                        <input type="password" name="currentPassword" required>
-                    </div>
-                    <div class="form-group">
-                        <label>새 비밀번호</label>
-                        <input type="password" name="newPassword" required maxlength="20">
-                    </div>
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-primary btn-sm">변경</button>
-                    </div>
-                </form>
-            </div>
+				<div class="card mt-16">
+					<h3 class="mypage-section-title">비밀번호 변경</h3>
+					<form th:action="@{/member/edit/password}" method="post">
+						<div class="form-group">
+							<label>현재 비밀번호</label> <input type="password"
+								name="currentPassword" required>
+						</div>
+						<div class="form-group">
+							<label>새 비밀번호</label> <input type="password" name="newPassword"
+								required maxlength="20">
+						</div>
+						<div class="form-actions">
+							<button type="submit" class="btn btn-primary btn-sm">변경</button>
+						</div>
+					</form>
+				</div>
 
-        </div>
+			</div>
 
-        <div class="mypage-reviews">
-            <h2 class="section-title">
-                내가 쓴 리뷰
-                <span class="review-count" th:text="${#lists.size(reviewList)}">0</span>
-            </h2>
+			<div class="mypage-reviews">
+				<h2 class="section-title">
+					내가 쓴 리뷰 <span class="review-count"
+						th:text="${#lists.size(reviewList)}">0</span>
+				</h2>
 
-            <p th:if="${#lists.isEmpty(reviewList)}" class="text-muted text-sm">아직 작성한 리뷰가 없습니다.</p>
+				<p th:if="${#lists.isEmpty(reviewList)}" class="text-muted text-sm">아직
+					작성한 리뷰가 없습니다.</p>
 
-            <div th:unless="${#lists.isEmpty(reviewList)}" class="my-review-list">
-                <div th:each="review : ${reviewList}" class="my-review-item">
-                    <a th:href="@{/movie/detail(mno=${review.movie.mno})}"
-                       class="my-review-movie"
-                       th:text="${review.movie.title}">영화 제목</a>
-                    <div class="my-review-meta">
-                        <span class="score" th:text="'★ ' + ${review.score} + '점'"></span>
-                        <span class="text-muted text-xs" th:text="${review.regDate}"></span>
-                    </div>
-                    <p class="my-review-content" th:text="${review.content}"></p>
-                    <div class="my-review-actions">
-                        <!-- from=mypage 로 수정 후 마이페이지로 돌아오게 -->
-                        <a th:href="@{/review/modify(rno=${review.rno}, from='mypage')}"
-                           class="btn btn-outline btn-xs">수정</a>
-                        <form th:action="@{/review/delete}" method="post"
-                              onsubmit="return confirm('삭제하시겠습니까?')">
-                            <input type="hidden" name="rno" th:value="${review.rno}">
-                            <input type="hidden" name="from" value="mypage">
-                            <button type="submit" class="btn btn-danger btn-xs">삭제</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
+				<div th:unless="${#lists.isEmpty(reviewList)}"
+					class="my-review-list">
+					<div th:each="review : ${reviewList}" class="my-review-item">
+						<a th:href="@{/movie/detail(mno=${review.movie.mno})}"
+							class="my-review-movie" th:text="${review.movie.title}">영화 제목</a>
+						<div class="my-review-meta">
+							<span class="score" th:text="'★ ' + ${review.score} + '점'"></span>
+							<span class="text-muted text-xs" th:text="${review.regDate}"></span>
+						</div>
+						<p class="my-review-content" th:text="${review.content}"></p>
+						<div class="my-review-actions">
+							<a th:href="@{/review/modify(rno=${review.rno}, from='mypage')}"
+								class="btn btn-outline btn-xs">수정</a>
+							<form th:action="@{/review/delete}" method="post"
+								onsubmit="return confirm('삭제하시겠습니까?')">
+								<input type="hidden" name="rno" th:value="${review.rno}">
+								<input type="hidden" name="from" value="mypage">
+								<button type="submit" class="btn btn-danger btn-xs">삭제</button>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
 
-    </div>
-</div>
+		</div>
+	</div>
 
 </body>
 </html>

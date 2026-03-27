@@ -2,47 +2,46 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
 
-<!--
+	<!--
   영화 등록/수정 공통 폼 필드
   사용법:
     등록: th:replace="~{fragments/movieFormFields :: movieFields(null)}"
     수정: th:replace="~{fragments/movieFormFields :: movieFields(${movie})}"
 -->
-<th:block th:fragment="movieFields(movie)">
-    <div class="form-group">
-        <label>제목</label>
-        <input type="text" name="title" th:value="${movie?.title}" required>
-    </div>
-    <div class="form-group">
-        <label>감독</label>
-        <input type="text" name="director" th:value="${movie?.director}" required>
-    </div>
-    <div class="form-group">
-        <label>장르</label>
-        <select name="genre">
-            <th:block th:replace="~{fragments/genre :: genreOptions(${movie?.genre})}"></th:block>
-        </select>
-    </div>
-    <div class="form-group">
-        <label>개봉년도</label>
-        <input type="number" name="releaseYear" th:value="${movie?.releaseYear}" min="1900" max="2099">
-    </div>
-    <div class="form-group">
-        <label>줄거리</label>
-        <textarea name="synopsis" rows="5" th:text="${movie?.synopsis}"></textarea>
-    </div>
-    <div class="form-group">
-        <div th:if="${movie?.poster != null and !movie.poster.isEmpty()}" class="poster-preview mb-12">
-            <img th:src="@{/uploads/{p}(p=${movie.poster})}" th:alt="${movie.title}">
-            <span>현재 포스터</span>
-        </div>
-        <label>
-            포스터 이미지
-            <span th:if="${movie != null}" class="text-muted text-xs">(변경 시에만 선택)</span>
-        </label>
-        <input type="file" name="poster" accept="image/*">
-    </div>
-</th:block>
+	<th:block th:fragment="movieFields(movie)">
+		<div class="form-group">
+			<label>제목</label> <input type="text" name="title"
+				th:value="${movie?.title}" required>
+		</div>
+		<div class="form-group">
+			<label>감독</label> <input type="text" name="director"
+				th:value="${movie?.director}" required>
+		</div>
+		<div class="form-group">
+			<label>장르</label> <select name="genre">
+				<th:block
+					th:replace="~{fragments/genre :: genreOptions(${movie?.genre})}"></th:block>
+			</select>
+		</div>
+		<div class="form-group">
+			<label>개봉년도</label> <input type="number" name="releaseYear"
+				th:value="${movie?.releaseYear}" min="1900" max="2099">
+		</div>
+		<div class="form-group">
+			<label>줄거리</label>
+			<textarea name="synopsis" rows="5" th:text="${movie?.synopsis}"></textarea>
+		</div>
+		<div class="form-group">
+			<div th:if="${movie?.poster != null and !movie.poster.isEmpty()}"
+				class="poster-preview mb-12">
+				<img th:src="@{/uploads/{p}(p=${movie.poster})}"
+					th:alt="${movie.title}"> <span>현재 포스터</span>
+			</div>
+			<label> 포스터 이미지 <span th:if="${movie != null}"
+				class="text-muted text-xs">(변경 시에만 선택)</span>
+			</label> <input type="file" name="poster" accept="image/*">
+		</div>
+	</th:block>
 
 </body>
 </html>

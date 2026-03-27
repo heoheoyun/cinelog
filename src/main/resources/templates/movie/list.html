@@ -3,71 +3,71 @@
 <head th:replace="~{fragments/head :: head('영화 목록')}"></head>
 <body>
 
-<header th:replace="~{fragments/siteHeader :: headerWithNav}"></header>
+	<header th:replace="~{fragments/siteHeader :: headerWithNav}"></header>
 
-<div class="container">
-    <div class="page-title-row">
-        <h1 class="page-title">MOVIES</h1>
-        <a th:if="${session.loginUser != null and session.loginUser.role == 'ADMIN'}"
-           href="/movie/reg" class="btn btn-primary btn-sm">+ 영화 등록</a>
-    </div>
+	<div class="container">
+		<div class="page-title-row">
+			<h1 class="page-title">MOVIES</h1>
+			<a
+				th:if="${session.loginUser != null and session.loginUser.role.name() == 'ADMIN'}"
+				href="/movie/reg" class="btn btn-primary btn-sm">+ 영화 등록</a>
+		</div>
 
-    <div class="list-controls">
-        <form th:action="@{/movie/list}" method="get" class="search-bar">
-            <select name="cat">
-                <option value="title"    th:selected="${cat == 'title'}">제목</option>
-                <option value="director" th:selected="${cat == 'director'}">감독</option>
-            </select>
-            <input type="text" name="searchText" th:value="${searchText}" placeholder="검색어를 입력하세요">
-            <button type="submit" class="btn btn-primary btn-sm">검색</button>
-        </form>
-        <div class="control-actions">
-            <a href="/movie/list" class="btn btn-outline btn-sm">전체보기</a>
-        </div>
-    </div>
+		<div class="list-controls">
+			<form th:action="@{/movie/list}" method="get" class="search-bar">
+				<select name="cat">
+					<option value="title" th:selected="${cat == 'title'}">제목</option>
+					<option value="director" th:selected="${cat == 'director'}">감독</option>
+					<option value="all" th:selected="${cat == 'all'}">통합</option>
+				</select> <input type="text" name="searchText" th:value="${searchText}"
+					placeholder="검색어를 입력하세요">
+				<button type="submit" class="btn btn-primary btn-sm">검색</button>
+			</form>
+			<div class="control-actions">
+				<a href="/movie/list" class="btn btn-outline btn-sm">전체보기</a>
+			</div>
+		</div>
 
-    <p class="list-meta"
-       th:if="${searchText != null}"
-       th:text="'&quot;' + ${searchText} + '&quot; 검색 결과 ' + ${ph.totalCount} + '건'"></p>
+		<p class="list-meta" th:if="${searchText != null}"
+			th:text="'&quot;' + ${searchText} + '&quot; 검색 결과 ' + ${ph.totalCount} + '건'"></p>
 
-    <div class="movie-grid">
-        <div th:if="${#lists.isEmpty(movieList)}" class="movie-empty">
-            <div class="empty-icon">🎬</div>
-            <p th:if="${searchText != null}">검색 결과가 없습니다.</p>
-            <p th:unless="${searchText != null}">등록된 영화가 없습니다.</p>
-        </div>
+		<div class="movie-grid">
+			<div th:if="${#lists.isEmpty(movieList)}" class="movie-empty">
+				<div class="empty-icon">🎬</div>
+				<p th:if="${searchText != null}">검색 결과가 없습니다.</p>
+				<p th:unless="${searchText != null}">등록된 영화가 없습니다.</p>
+			</div>
 
-        <a th:each="movie : ${movieList}"
-           th:href="@{/movie/detail(mno=${movie.mno})}"
-           class="movie-card">
-            <div class="movie-card-poster">
-                <img th:if="${movie.poster != null and !movie.poster.isEmpty()}"
-                     th:src="@{/uploads/{p}(p=${movie.poster})}"
-                     th:alt="${movie.title}">
-                <div class="movie-card-no-poster"
-                     th:unless="${movie.poster != null and !movie.poster.isEmpty()}">
-                    <span class="no-poster-icon">🎞️</span>
-                    <span>포스터 없음</span>
-                </div>
-                <span class="movie-card-score"
-                      th:if="${avgScores != null and avgScores[movie.mno] != null}"
-                      th:text="'★ ' + ${#numbers.formatDecimal(avgScores[movie.mno], 1, 1)}"></span>
-            </div>
-            <div class="movie-card-body">
-                <div class="movie-card-title" th:text="${movie.title}">제목</div>
-                <div class="movie-card-director" th:text="${movie.director}">감독</div>
-                <div class="movie-card-tags">
-                    <span class="movie-card-tag"
-                          th:if="${movie.genre != null and !movie.genre.isEmpty()}"
-                          th:text="${movie.genre}">장르</span>
-                </div>
-                <div class="movie-card-year" th:text="${movie.releaseYear}">2024</div>
-            </div>
-        </a>
-    </div>
+			<a th:each="movie : ${movieList}"
+				th:href="@{/movie/detail(mno=${movie.mno})}" class="movie-card">
+				<div class="movie-card-poster">
+					<img th:if="${movie.poster != null and !movie.poster.isEmpty()}"
+						th:src="@{/uploads/{p}(p=${movie.poster})}"
+						th:alt="${movie.title}">
+					<div class="movie-card-no-poster"
+						th:unless="${movie.poster != null and !movie.poster.isEmpty()}">
+						<span class="no-poster-icon">🎞️</span> <span>포스터 없음</span>
+					</div>
+					<span class="movie-card-score"
+						th:if="${avgScores != null and avgScores[movie.mno] != null}"
+						th:text="'★ ' + ${#numbers.formatDecimal(avgScores[movie.mno], 1, 1)}"></span>
+				</div>
+				<div class="movie-card-body">
+					<div class="movie-card-title" th:text="${movie.title}">제목</div>
+					<div class="movie-card-director" th:text="${movie.director}">감독</div>
+					<div class="movie-card-tags">
+						<span class="movie-card-tag"
+							th:if="${movie.genre != null and !movie.genre.isEmpty()}"
+							th:text="${movie.genre}">장르</span>
+					</div>
+					<div class="movie-card-year" th:text="${movie.releaseYear}">2024</div>
+				</div>
+			</a>
+		</div>
 
-    <div th:replace="~{fragments/pagination :: paging(${ph}, ${searchParam}, '/movie/list')}"></div>
-</div>
+		<div
+			th:replace="~{fragments/pagination :: paging(${ph}, ${searchParam}, '/movie/list')}"></div>
+	</div>
 
 </body>
 </html>

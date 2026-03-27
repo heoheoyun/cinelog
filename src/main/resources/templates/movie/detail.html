@@ -42,7 +42,7 @@
 			</table>
 
 			<div
-				th:if="${session.loginUser != null and session.loginUser.role == 'ADMIN'}"
+				th:if="${session.loginUser != null and session.loginUser.role.name() == 'ADMIN'}"
 				class="movie-actions">
 				<a th:href="@{/movie/modify(mno=${movie.mno})}"
 					class="btn btn-outline btn-sm">수정</a>
@@ -78,7 +78,9 @@
 		</div>
 		<p th:unless="${session.loginUser != null}"
 			class="text-muted text-sm mt-16">
-			<a href="/member/login">로그인</a> 후 리뷰를 작성할 수 있습니다.
+			<a
+				th:href="@{/member/login(redirect='/movie/detail?mno=' + ${movie.mno})}">로그인</a>
+			후 리뷰를 작성할 수 있습니다.
 		</p>
 
 		<p th:if="${#lists.isEmpty(reviewList)}"

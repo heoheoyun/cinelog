@@ -27,37 +27,37 @@ import lombok.NoArgsConstructor;
 @EntityListeners(AuditingEntityListener.class)
 public class ReviewEntity {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "review_seq")
-	@SequenceGenerator(name = "review_seq", sequenceName = "review_seq", allocationSize = 1)
-	private Long rno;
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "review_seq")
+    @SequenceGenerator(name = "review_seq", sequenceName = "review_seq", allocationSize = 1)
+    private Long rno;
 
-	@Column(nullable = false)
-	private int score;
+    @Column(nullable = false)
+    private int score;
 
-	@Column(nullable = false, length = 500)
-	private String content;
+    @Column(nullable = false, length = 500)
+    private String content;
 
-	@ManyToOne
-	@JoinColumn(name = "movie_id", nullable = false)
-	private MovieEntity movie;
+    @ManyToOne
+    @JoinColumn(name = "movie_id", nullable = false)
+    private MovieEntity movie;
 
-	@ManyToOne
-	@JoinColumn(name = "writer", nullable = false)
-	private MemberEntity member;
+    @ManyToOne
+    @JoinColumn(name = "writer", nullable = false)
+    private MemberEntity member;
 
-	@CreatedDate
-	@Column(updatable = false)
-	private LocalDate regDate;
+    @CreatedDate
+    @Column(updatable = false)
+    private LocalDate regDate;
 
-	@LastModifiedDate
-	private LocalDate modifyDate;
+    @LastModifiedDate
+    private LocalDate modifyDate;
 
-	@Builder
-	public ReviewEntity(int score, String content, MovieEntity movie, MemberEntity member) {
-		this.score = score;
-		this.content = content;
-		this.movie = movie;
-		this.member = member;
-	}
+    @Builder
+    public ReviewEntity(int score, String content, MovieEntity movie, MemberEntity member) {
+        this.score = score;
+        this.content = content;
+        this.movie = movie;
+        this.member = member;
+    }
 }

@@ -1,6 +1,7 @@
 package com.example.dto;
 
 import com.example.entity.MemberEntity;
+import com.example.entity.Role;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -29,6 +30,6 @@ public class MemberDto {
 
 	public MemberEntity toEntity() {
 		return MemberEntity.builder().username(this.username).password(this.password).nickname(this.nickname)
-				.role("USER").build();
+				.role(Role.USER).build();
 	}
 }

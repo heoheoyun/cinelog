@@ -30,7 +30,7 @@ public class MovieController {
 
 	private final int PAGE_SIZE = 5;
 
-	// 영화 목록 조회 (제목/감독 검색, 페이징)
+	// 영화 목록 조회 (제목/감독/통합 검색, 페이징)
 	@GetMapping("/movie/list")
 	public String list(@RequestParam(defaultValue = "1") int page, String cat, String searchText, Model model) {
 
@@ -58,14 +58,13 @@ public class MovieController {
 		return "movie/list";
 	}
 
-	// 영화 상세 조회 (리뷰 목록, 평균 평점 포함)
+	// 영화 상세 조회 (리뷰 목록, 평균 평점 @Query로 조회)
 	@GetMapping("/movie/detail")
 	public String detail(Long mno, Model model) {
-		MovieEntity movie = movieService.findById(mno);
-		List<ReviewEntity> reviewList = reviewService.findByMovie(movie);
+		List<ReviewEntity> reviewList = reviewService.findByMovieMno(mno);
 
-		model.addAttribute("movie", movie);
-		model.addAttribute("avgScore", movieService.calcAvg(reviewList));
+		model.addAttribute("movie", movieService.findById(mno));
+		model.addAttribute("avgScore", movieService.getAvgScore(mno));
 		model.addAttribute("reviewList", reviewList);
 		return "movie/detail";
 	}

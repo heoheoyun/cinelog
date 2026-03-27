@@ -2,37 +2,38 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
 
-<!-- 네비 포함 헤더 (로그인 여부에 따라 nav 내용 변경) -->
-<header th:fragment="headerWithNav" class="site-header">
-    <div class="inner">
-        <a class="site-logo" href="/">CINELOG</a>
-        <div class="nav-right">
-            <th:block th:if="${session.loginUser != null}">
-                <a href="/member/mypage" th:text="${session.loginUser.nickname} + ' 님'">닉네임 님</a>
-                <a href="/member/logout">로그아웃</a>
-            </th:block>
-            <th:block th:if="${session.loginUser == null}">
-                <a href="/member/login">로그인</a>
-                <a href="/member/reg">회원가입</a>
-            </th:block>
-            <button class="theme-toggle" onclick="toggleTheme()" title="테마 전환" type="button">
-                <span class="icon-moon">🌙</span>
-                <span class="icon-sun">☀️</span>
-            </button>
-        </div>
-    </div>
-</header>
+	<!-- 네비 포함 헤더 (로그인 여부에 따라 nav 내용 변경) -->
+	<header th:fragment="headerWithNav" class="site-header">
+		<div class="inner">
+			<a class="site-logo" href="/">CINELOG</a>
+			<div class="nav-right">
+				<th:block th:if="${session.loginUser != null}">
+					<a href="/member/mypage"
+						th:text="${session.loginUser.nickname} + ' 님'">닉네임 님</a>
+					<a href="/member/logout">로그아웃</a>
+				</th:block>
+				<th:block th:if="${session.loginUser == null}">
+					<a href="/member/login">로그인</a>
+					<a href="/member/reg">회원가입</a>
+				</th:block>
+				<button class="theme-toggle" onclick="toggleTheme()" title="테마 전환"
+					type="button">
+					<span class="icon-moon">🌙</span> <span class="icon-sun">☀️</span>
+				</button>
+			</div>
+		</div>
+	</header>
 
-<!-- 네비 없는 헤더 (로그인/회원가입 페이지용) -->
-<header th:fragment="headerSimple" class="site-header">
-    <div class="inner">
-        <a class="site-logo" href="/">CINELOG</a>
-        <button class="theme-toggle" onclick="toggleTheme()" title="테마 전환" type="button">
-            <span class="icon-moon">🌙</span>
-            <span class="icon-sun">☀️</span>
-        </button>
-    </div>
-</header>
+	<!-- 네비 없는 헤더 (로그인/회원가입 페이지용) -->
+	<header th:fragment="headerSimple" class="site-header">
+		<div class="inner">
+			<a class="site-logo" href="/">CINELOG</a>
+			<button class="theme-toggle" onclick="toggleTheme()" title="테마 전환"
+				type="button">
+				<span class="icon-moon">🌙</span> <span class="icon-sun">☀️</span>
+			</button>
+		</div>
+	</header>
 
 </body>
 </html>

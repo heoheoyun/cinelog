@@ -3,6 +3,7 @@ package com.example.interceptor;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import com.example.entity.MemberEntity;
+import com.example.entity.Role;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -14,7 +15,7 @@ public class AdminInterceptor implements HandlerInterceptor {
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
 		MemberEntity loginUser = (MemberEntity) request.getSession().getAttribute("loginUser");
-		if (loginUser == null || !"ADMIN".equalsIgnoreCase(loginUser.getRole())) {
+		if (loginUser == null || loginUser.getRole() != Role.ADMIN) {
 			response.sendRedirect("/movie/list");
 			return false;
 		}

@@ -3,21 +3,24 @@
 <head th:replace="~{fragments/head :: head('영화 수정')}"></head>
 <body>
 
-<header th:replace="~{fragments/siteHeader :: headerWithNav}"></header>
+	<header th:replace="~{fragments/siteHeader :: headerWithNav}"></header>
 
-<div class="container">
-    <h1 class="page-title">EDIT MOVIE</h1>
+	<div class="container">
+		<h1 class="page-title">EDIT MOVIE</h1>
 
-    <div class="card card-md mt-16">
-        <form th:action="@{/movie/modify(mno=${movie.mno})}" method="post" enctype="multipart/form-data">
-            <th:block th:replace="~{fragments/movieFormFields :: movieFields(${movie})}"></th:block>
-            <div class="form-actions">
-                <button type="submit" class="btn btn-primary">수정 완료</button>
-                <a th:href="@{/movie/detail?mno=${movie.mno}}" class="btn btn-outline">취소</a>
-            </div>
-        </form>
-    </div>
-</div>
+		<div class="card card-md mt-16">
+			<form th:action="@{/movie/modify(mno=${movie.mno})}" method="post"
+				enctype="multipart/form-data">
+				<th:block
+					th:replace="~{fragments/movieFormFields :: movieFields(${movie})}"></th:block>
+				<div class="form-actions">
+					<button type="submit" class="btn btn-primary">수정 완료</button>
+					<a th:href="@{/movie/detail?mno=${movie.mno}}"
+						class="btn btn-outline">취소</a>
+				</div>
+			</form>
+		</div>
+	</div>
 
 </body>
 </html>

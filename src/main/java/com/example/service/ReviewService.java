@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.example.dto.ReviewDto;
-import com.example.entity.MovieEntity;
 import com.example.entity.ReviewEntity;
 import com.example.repository.ReviewRepository;
 
@@ -27,9 +26,9 @@ public class ReviewService {
 		return reviewRepository.findById(rno).orElseThrow();
 	}
 
-	// 특정 영화의 리뷰 목록 조회
-	public List<ReviewEntity> findByMovie(MovieEntity movie) {
-		return reviewRepository.findByMovie(movie);
+	// 특정 영화의 리뷰 목록 조회 (movieId 직접 사용 — 더미 엔티티 불필요)
+	public List<ReviewEntity> findByMovieMno(Long mno) {
+		return reviewRepository.findByMovieMno(mno);
 	}
 
 	// 리뷰 수정

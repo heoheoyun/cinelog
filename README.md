@@ -27,7 +27,7 @@
 ```
 src/main/
 ├── java/com/example/
-│   ├── Exam2Application.java         @EnableJpaAuditing
+│   ├── CineLogApplication.java       @EnableJpaAuditing
 │   ├── config/
 │   │   └── WebConfig.java            인터셉터 URL 패턴 등록
 │   ├── controller/
@@ -42,15 +42,21 @@ src/main/
 │   ├── entity/
 │   │   ├── MemberEntity.java
 │   │   ├── MovieEntity.java
-│   │   └── ReviewEntity.java
+│   │   ├── ReviewEntity.java
+│   │   └── Role.java                 USER / ADMIN enum
+│   ├── exception/
+│   │   ├── EntityNotFoundException.java
+│   │   ├── FileUploadException.java
+│   │   └── UnauthorizedException.java
 │   ├── interceptor/
-│   │   ├── LoginInterceptor.java     비로그인 요청 차단
+│   │   ├── LoginInterceptor.java     비로그인 요청 차단 (redirect URL 보존)
 │   │   └── AdminInterceptor.java     비ADMIN 요청 차단
 │   ├── repository/
 │   │   ├── MemberRepository.java
 │   │   ├── MovieRepository.java
 │   │   └── ReviewRepository.java
 │   ├── service/
+│   │   ├── FileService.java          파일 업로드 공통 처리
 │   │   ├── MemberService.java
 │   │   ├── MovieService.java
 │   │   └── ReviewService.java
@@ -87,7 +93,7 @@ src/main/
 
 ---
 
-## 🗄 DB 설계
+## DB 설계
 
 ### tbl_movie_members (회원)
 
@@ -96,13 +102,13 @@ src/main/
 | username | VARCHAR(20) PK | 아이디 |
 | password | VARCHAR(20) | 비밀번호 |
 | nickname | VARCHAR(20) | 닉네임 |
-| user_role | VARCHAR(10) | USER / ADMIN |
+| user_role | VARCHAR(10) | USER / ADMIN (Role enum) |
 
 ### tbl_movies (영화)
 
 | 컬럼 | 타입 | 설명 |
 |---|---|---|
-| mno | NUMBER PK | 자동 생성 |
+| mno | NUMBER PK | movie_seq 시퀀스로 자동 생성 |
 | title | VARCHAR(100) | 제목 |
 | director | VARCHAR(50) | 감독 |
 | genre | VARCHAR(20) | 장르 |
@@ -115,7 +121,7 @@ src/main/
 
 | 컬럼 | 타입 | 설명 |
 |---|---|---|
-| rno | NUMBER PK | 자동 생성 |
+| rno | NUMBER PK | review_seq 시퀀스로 자동 생성 |
 | score | NUMBER | 평점 1~5 |
 | content | VARCHAR(500) | 한줄평 |
 | movie_id | NUMBER FK | 영화 참조 |
@@ -152,7 +158,8 @@ src/main/
 ### 회원 관리
 - 회원가입 / 로그인 / 로그아웃
 - Spring Security 없이 `HttpSession`으로 직접 인증 처리
-- ADMIN / USER 역할 구분
+- ADMIN / USER 역할 구분 (`Role` enum)
+- 중복 아이디 가입 방지
 
 ### 내 정보 페이지
 - 닉네임 이니셜 아바타, 역할 배지 표시
@@ -161,8 +168,8 @@ src/main/
 
 ### 영화 관리
 - ADMIN만 영화 등록·수정·삭제 가능
-- 포스터 이미지 업로드 (`UUID_원본파일명` 형식으로 서버 저장)
-- 제목 / 감독 키워드 검색 (파생 쿼리 `Containing`)
+- 포스터 이미지 업로드 (`FileService`, `UUID_원본파일명` 형식으로 서버 저장)
+- 제목 / 감독 / 통합 키워드 검색 (파생 쿼리 + JPQL `@Query`)
 - 페이징 처리 (`PageHandler` 유틸 클래스)
 - 영화 목록을 4열 카드 그리드로 표시 (반응형)
 
@@ -170,27 +177,24 @@ src/main/
 - 로그인한 사용자만 리뷰 작성 가능
 - 본인 리뷰만 수정·삭제 가능
 - 평점 1~5점 + 한줄평 (최대 200자)
-- 평균 평점은 리뷰 목록 Stream으로 계산 (`@Query` 미사용)
+- 평균 평점은 `@Query`로 DB에서 직접 계산 (N+1 제거)
+- 마이페이지에서 수정·삭제 시 마이페이지로 복귀 (`from` 파라미터)
 
 ### 인터셉터
-- `LoginInterceptor` — `/member/mypage`, `/member/edit/**`, `/review/**`
-- `AdminInterceptor` — `/movie/reg`, `/movie/modify`, `/movie/delete`
+- `LoginInterceptor` — `/member/mypage`, `/member/edit/**`, `/review/**` 차단, 로그인 후 원래 페이지로 자동 복귀
+- `AdminInterceptor` — `/movie/reg`, `/movie/modify`, `/movie/delete` 차단
 
 ### UI 테마
 - 다크 / 라이트 모드 전환 (헤더 🌙☀️ 버튼)
 - `localStorage`에 선택 저장, `theme.js`를 CSS 전에 로드해 FOUC 방지
 
----
+### 로그인 후 원래 페이지 복귀
 
-## 구현 시 고민했던 점
-
-### 리뷰 writer 보안 처리
-
-form의 hidden 필드로 writer를 받으면 사용자가 값을 임의로 조작할 수 있어 컨트롤러에서 세션으로 직접 꺼내 set하는 방식으로 변경했습니다.
+`LoginInterceptor`에서 접근 URL을 인코딩해 `redirect` 파라미터로 전달하고, 로그인 성공 시 디코딩해서 원래 페이지로 이동합니다.
 
 ```java
-MemberEntity loginUser = (MemberEntity) session.getAttribute("loginUser");
-dto.setWriter(loginUser.getUsername());
+String encoded = URLEncoder.encode(redirectUrl, StandardCharsets.UTF_8);
+response.sendRedirect("/member/login?redirect=" + encoded);
 ```
 
 ### Thymeleaf 프래그먼트 활용

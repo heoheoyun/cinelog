@@ -3,21 +3,23 @@
 <head th:replace="~{fragments/head :: head('영화 등록')}"></head>
 <body>
 
-<header th:replace="~{fragments/siteHeader :: headerWithNav}"></header>
+	<header th:replace="~{fragments/siteHeader :: headerWithNav}"></header>
 
-<div class="container">
-    <h1 class="page-title">NEW MOVIE</h1>
+	<div class="container">
+		<h1 class="page-title">NEW MOVIE</h1>
 
-    <div class="card card-md mt-16">
-        <form th:action="@{/movie/reg}" method="post" enctype="multipart/form-data">
-            <th:block th:replace="~{fragments/movieFormFields :: movieFields(null)}"></th:block>
-            <div class="form-actions">
-                <button type="submit" class="btn btn-primary">등록</button>
-                <a href="/movie/list" class="btn btn-outline">취소</a>
-            </div>
-        </form>
-    </div>
-</div>
+		<div class="card card-md mt-16">
+			<form th:action="@{/movie/reg}" method="post"
+				enctype="multipart/form-data">
+				<th:block
+					th:replace="~{fragments/movieFormFields :: movieFields(null)}"></th:block>
+				<div class="form-actions">
+					<button type="submit" class="btn btn-primary">등록</button>
+					<a href="/movie/list" class="btn btn-outline">취소</a>
+				</div>
+			</form>
+		</div>
+	</div>
 
 </body>
 </html>

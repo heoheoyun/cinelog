@@ -1,15 +1,15 @@
--- 회원
+-- 회원 (user_role은 Role enum 값과 동일하게 USER/ADMIN)
 INSERT INTO tbl_movie_members (username, password, nickname, user_role) VALUES ('admin', '1234', '관리자', 'ADMIN');
 INSERT INTO tbl_movie_members (username, password, nickname, user_role) VALUES ('user1', '1234', '김철수', 'USER');
 INSERT INTO tbl_movie_members (username, password, nickname, user_role) VALUES ('user2', '1234', '이영희', 'USER');
 INSERT INTO tbl_movie_members (username, password, nickname, user_role) VALUES ('user3', '1234', '박민준', 'USER');
 
--- 영화 (mno 직접 지정)
-INSERT INTO tbl_movies (mno, title, director, genre, release_year, synopsis, poster, reg_date) VALUES (1, '인터스텔라', '크리스토퍼 놀란', 'SF', 2014, '우주를 통해 인류의 생존을 찾는 탐험을 그린 SF 대작', null, SYSDATE);
-INSERT INTO tbl_movies (mno, title, director, genre, release_year, synopsis, poster, reg_date) VALUES (2, '기생충', '봉준호', '드라마', 2019, '두 가족의 만남으로 시작되는 계층 갈등을 그린 영화', null, SYSDATE);
-INSERT INTO tbl_movies (mno, title, director, genre, release_year, synopsis, poster, reg_date) VALUES (3, '범죄도시', '강윤성', '액션', 2017, '괴물 형사 마석도의 범죄 소탕 작전', null, SYSDATE);
-INSERT INTO tbl_movies (mno, title, director, genre, release_year, synopsis, poster, reg_date) VALUES (4, '너의 이름은', '신카이 마코토', '애니메이션', 2016, '두 남녀가 꿈속에서 몸이 바뀌는 신비로운 이야기', null, SYSDATE);
-INSERT INTO tbl_movies (mno, title, director, genre, release_year, synopsis, poster, reg_date) VALUES (5, '어바웃 타임', '리처드 커티스', '로맨스', 2013, '시간 여행 능력을 가진 남자의 사랑과 삶 이야기', null, SYSDATE);
+-- 영화 (mno는 movie_seq 시퀀스로 생성)
+INSERT INTO tbl_movies (mno, title, director, genre, release_year, synopsis, poster, reg_date) VALUES (movie_seq.NEXTVAL, '인터스텔라', '크리스토퍼 놀란', 'SF', 2014, '우주를 통해 인류의 생존을 찾는 탐험을 그린 SF 대작', null, SYSDATE);
+INSERT INTO tbl_movies (mno, title, director, genre, release_year, synopsis, poster, reg_date) VALUES (movie_seq.NEXTVAL, '기생충', '봉준호', '드라마', 2019, '두 가족의 만남으로 시작되는 계층 갈등을 그린 영화', null, SYSDATE);
+INSERT INTO tbl_movies (mno, title, director, genre, release_year, synopsis, poster, reg_date) VALUES (movie_seq.NEXTVAL, '범죄도시', '강윤성', '액션', 2017, '괴물 형사 마석도의 범죄 소탕 작전', null, SYSDATE);
+INSERT INTO tbl_movies (mno, title, director, genre, release_year, synopsis, poster, reg_date) VALUES (movie_seq.NEXTVAL, '너의 이름은', '신카이 마코토', '애니메이션', 2016, '두 남녀가 꿈속에서 몸이 바뀌는 신비로운 이야기', null, SYSDATE);
+INSERT INTO tbl_movies (mno, title, director, genre, release_year, synopsis, poster, reg_date) VALUES (movie_seq.NEXTVAL, '어바웃 타임', '리처드 커티스', '로맨스', 2013, '시간 여행 능력을 가진 남자의 사랑과 삶 이야기', null, SYSDATE);
 
 -- 리뷰 (rno는 review_seq 시퀀스로 생성)
 INSERT INTO tbl_reviews (rno, score, content, movie_id, writer, reg_date, modify_date) VALUES (review_seq.NEXTVAL, 5, '인생 영화입니다. 우주 장면이 압도적이에요.', 1, 'user1', SYSDATE, SYSDATE);

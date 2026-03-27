@@ -1,5 +1,8 @@
 package com.example.controller;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,29 +27,40 @@ public class MemberController {
 		return "member/regForm";
 	}
 
-	// 회원가입 처리
+	// 회원가입 처리 (중복 아이디 시 오류 메시지)
 	@PostMapping("/member/reg")
-	public String register(MemberDto dto) {
-		memberService.register(dto);
+	public String register(MemberDto dto, Model model) {
+		boolean success = memberService.register(dto);
+		if (!success) {
+			model.addAttribute("error", "이미 사용 중인 아이디입니다.");
+			return "member/regForm";
+		}
 		return "redirect:/member/login";
 	}
 
-	// 로그인 폼
+	// 로그인 폼 (redirect 파라미터 유지)
 	@GetMapping("/member/login")
-	public String loginForm(String error, Model model) {
+	public String loginForm(String error, String redirect, Model model) {
 		if (error != null)
 			model.addAttribute("msg", "아이디 또는 비밀번호가 올바르지 않습니다.");
+		if (redirect != null)
+			model.addAttribute("redirect", redirect);
 		return "member/loginForm";
 	}
 
-	// 로그인 처리 후 세션 저장
+	// 로그인 처리 후 세션 저장, redirect 있으면 원래 페이지로 복귀
 	@PostMapping("/member/login")
-	public String login(String username, String password, HttpSession session) {
+	public String login(String username, String password, String redirect, HttpSession session) {
 		MemberEntity member = memberService.login(username, password);
 		if (member == null)
-			return "redirect:/member/login?error";
+			return "redirect:/member/login?error" + (redirect != null ? "&redirect=" + redirect : "");
 
 		session.setAttribute("loginUser", member);
+
+		if (redirect != null && !redirect.isBlank()) {
+			String decoded = URLDecoder.decode(redirect, StandardCharsets.UTF_8);
+			return "redirect:" + decoded;
+		}
 		return "redirect:/";
 	}
 
@@ -62,7 +76,6 @@ public class MemberController {
 	public String myPage(HttpSession session, Model model) {
 		MemberEntity loginUser = (MemberEntity) session.getAttribute("loginUser");
 		MemberEntity member = memberService.findById(loginUser.getUsername());
-
 		model.addAttribute("member", member);
 		model.addAttribute("reviewList", memberService.getMyReviews(member));
 		return "member/myPage";
@@ -84,7 +97,6 @@ public class MemberController {
 		boolean success = memberService.updatePassword(loginUser.getUsername(), currentPassword, newPassword);
 		if (!success)
 			return "redirect:/member/mypage?pwError";
-
 		session.setAttribute("loginUser", memberService.findById(loginUser.getUsername()));
 		return "redirect:/member/mypage?edited";
 	}

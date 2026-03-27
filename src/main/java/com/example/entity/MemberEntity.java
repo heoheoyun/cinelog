@@ -2,6 +2,8 @@ package com.example.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Builder;
@@ -24,11 +26,12 @@ public class MemberEntity {
 	@Column(nullable = false, length = 20)
 	private String nickname;
 
+	@Enumerated(EnumType.STRING)
 	@Column(name = "user_role", nullable = false, length = 10)
-	private String role;
+	private Role role;
 
 	@Builder
-	public MemberEntity(String username, String password, String nickname, String role) {
+	public MemberEntity(String username, String password, String nickname, Role role) {
 		this.username = username;
 		this.password = password;
 		this.nickname = nickname;
