@@ -14,6 +14,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.Builder;
 import lombok.Data;
@@ -27,7 +28,8 @@ import lombok.NoArgsConstructor;
 public class ReviewEntity {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "review_seq")
+	@SequenceGenerator(name = "review_seq", sequenceName = "review_seq", allocationSize = 1)
 	private Long rno;
 
 	@Column(nullable = false)

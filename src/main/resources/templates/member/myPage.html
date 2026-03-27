@@ -77,9 +77,13 @@
                     </div>
                     <p class="my-review-content" th:text="${review.content}"></p>
                     <div class="my-review-actions">
-                        <a th:href="@{/review/modify(rno=${review.rno})}" class="btn btn-outline btn-xs">수정</a>
-                        <form th:action="@{/review/delete?rno=${review.rno}}" method="post"
+                        <!-- from=mypage 로 수정 후 마이페이지로 돌아오게 -->
+                        <a th:href="@{/review/modify(rno=${review.rno}, from='mypage')}"
+                           class="btn btn-outline btn-xs">수정</a>
+                        <form th:action="@{/review/delete}" method="post"
                               onsubmit="return confirm('삭제하시겠습니까?')">
+                            <input type="hidden" name="rno" th:value="${review.rno}">
+                            <input type="hidden" name="from" value="mypage">
                             <button type="submit" class="btn btn-danger btn-xs">삭제</button>
                         </form>
                     </div>
