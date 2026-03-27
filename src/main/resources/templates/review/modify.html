@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('리뷰 수정')}"></head>
+<body>
+
+<header th:replace="~{fragments/siteHeader :: headerWithNav}"></header>
+
+<div class="container">
+    <h1 class="page-title">EDIT REVIEW</h1>
+    <p class="text-muted text-sm mb-16">
+        영화: <span class="text-gold" th:text="${review.movie.title}"></span>
+    </p>
+
+    <div class="card card-sm">
+        <form th:action="@{/review/modify?rno=${review.rno}}" method="post">
+            <div class="form-group">
+                <label>평점</label>
+                <select name="score">
+                    <th:block th:replace="~{fragments/scoreSelect :: scoreSelect(${review.score})}"></th:block>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>한 줄 평</label>
+                <input type="text" name="content" required maxlength="200" th:value="${review.content}">
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">수정 완료</button>
+                <a th:href="@{/movie/detail?mno=${review.movie.mno}}" class="btn btn-outline">취소</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

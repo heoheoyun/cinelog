@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="paging(ph, searchParam, baseUrl)"
+     class="pagination"
+     th:if="${ph != null and ph.totalPage > 0}">
+
+    <th:block th:if="${ph.showPrev}">
+        <a th:href="${baseUrl + '?page=' + (ph.beginPage - 1) + searchParam}">&lt;&lt;</a>
+    </th:block>
+
+    <th:block th:each="i : ${#numbers.sequence(ph.beginPage, ph.endPage)}">
+        <strong th:if="${i == ph.page}" th:text="${i}"></strong>
+        <a th:unless="${i == ph.page}"
+           th:href="${baseUrl + '?page=' + i + searchParam}"
+           th:text="${i}"></a>
+    </th:block>
+
+    <th:block th:if="${ph.showNext}">
+        <a th:href="${baseUrl + '?page=' + (ph.endPage + 1) + searchParam}">&gt;&gt;</a>
+    </th:block>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('CineLog')}"></head>
+<body>
+
+<header th:replace="~{fragments/siteHeader :: headerWithNav}"></header>
+
+<div class="container">
+    <div class="hero">
+        <div class="hero-title">CINELOG</div>
+        <div class="hero-divider"></div>
+        <p class="hero-sub">영화를 기록하고, 리뷰를 나누세요.</p>
+        <a href="/movie/list" class="btn btn-primary">영화 목록 보기</a>
+    </div>
+</div>
+
+</body>
+</html>

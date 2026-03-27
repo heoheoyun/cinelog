@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${movie.title})}"></head>
+<body>
+
+<header th:replace="~{fragments/siteHeader :: headerWithNav}"></header>
+
+<div class="container">
+    <div class="mt-24">
+        <a href="/movie/list" class="text-muted text-sm">← 목록으로</a>
+    </div>
+
+    <div class="card mt-16 clearfix">
+        <img class="poster-detail"
+             th:if="${movie.poster != null and !movie.poster.isEmpty()}"
+             th:src="@{/uploads/{p}(p=${movie.poster})}"
+             th:alt="${movie.title}">
+
+        <h2 class="movie-title" th:text="${movie.title}">영화 제목</h2>
+        <p class="movie-meta" th:text="${movie.director} + ' · ' + ${movie.releaseYear}"></p>
+
+        <table class="info-table">
+            <tr>
+                <th>장르</th>
+                <td th:text="${movie.genre}"></td>
+            </tr>
+            <tr>
+                <th>평균 평점</th>
+                <td>
+                    <span class="score" th:if="${avgScore != null}"
+                          th:text="${#numbers.formatDecimal(avgScore, 1, 1) + '점'}"></span>
+                    <span class="text-muted" th:unless="${avgScore != null}">—</span>
+                </td>
+            </tr>
+            <tr>
+                <th>줄거리</th>
+                <td class="text-sub" th:text="${movie.synopsis}"></td>
+            </tr>
+            <tr>
+                <th>등록일</th>
+                <td class="text-muted text-sm" th:text="${movie.regDate}"></td>
+            </tr>
+        </table>
+
+        <div th:if="${session.loginUser != null and session.loginUser.role == 'ADMIN'}"
+             class="movie-actions">
+            <a th:href="@{/movie/modify?mno=${movie.mno}}" class="btn btn-outline btn-sm">수정</a>
+            <form th:action="@{/movie/delete?mno=${movie.mno}}" method="post"
+                  onsubmit="return confirm('삭제하시겠습니까?')">
+                <button type="submit" class="btn btn-danger btn-sm">삭제</button>
+            </form>
+        </div>
+    </div>
+
+    <hr>
+
+    <h3 class="section-title">REVIEWS</h3>
+
+    <div th:if="${session.loginUser != null}" class="card">
+        <form th:action="@{/review/write}" method="post">
+            <input type="hidden" name="movieId" th:value="${movie.mno}">
+            <div class="review-form-row">
+                <div class="form-group score-group">
+                    <label>평점</label>
+                    <select name="score">
+                        <th:block th:replace="~{fragments/scoreSelect :: scoreSelect(null)}"></th:block>
+                    </select>
+                </div>
+                <div class="form-group content-group">
+                    <label>한 줄 평</label>
+                    <input type="text" name="content" required maxlength="200"
+                           placeholder="이 영화에 대한 짧은 감상을 남겨보세요.">
+                </div>
+                <button type="submit" class="btn btn-primary submit-btn">작성</button>
+            </div>
+        </form>
+    </div>
+    <p th:unless="${session.loginUser != null}" class="text-muted text-sm mt-16">
+        <a href="/member/login">로그인</a> 후 리뷰를 작성할 수 있습니다.
+    </p>
+
+    <p th:if="${#lists.isEmpty(reviewList)}" class="text-muted text-sm mt-16">아직 리뷰가 없습니다.</p>
+
+    <div th:unless="${#lists.isEmpty(reviewList)}" class="table-wrap mt-16">
+        <table>
+            <thead>
+                <tr>
+                    <th>닉네임</th>
+                    <th>평점</th>
+                    <th>한 줄 평</th>
+                    <th>작성일</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="review : ${reviewList}">
+                    <td class="text-sm" th:text="${review.member.nickname}"></td>
+                    <td><span class="score" th:text="${review.score + '점'}"></span></td>
+                    <td th:text="${review.content}"></td>
+                    <td class="text-muted text-xs" th:text="${review.regDate}"></td>
+                    <td>
+                        <th:block th:if="${session.loginUser != null
+                                           and session.loginUser.username == review.member.username}">
+                            <div class="flex gap-6">
+                                <a th:href="@{/review/modify(rno=${review.rno})}"
+                                   class="btn btn-outline btn-xs">수정</a>
+                                <form th:action="@{/review/delete?rno=${review.rno}}" method="post"
+                                      onsubmit="return confirm('삭제하시겠습니까?')">
+                                    <button type="submit" class="btn btn-danger btn-xs">삭제</button>
+                                </form>
+                            </div>
+                        </th:block>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+</body>
+</html>
