@@ -1,11 +1,11 @@
-CineLog — 영화 리뷰 사이트
-프로젝트 개요
+🎬 CineLog — 영화 리뷰 사이트
+📌 프로젝트 개요
 항목내용프로젝트명CineLog개발 형태개인 프로젝트주제영화 정보 공유 + 사용자 리뷰 사이트특징예매 없이 영화 정보 조회와 평점/한줄평에 집중
 
-기술 스택
+🛠 기술 스택
 분류기술BackendSpring Boot, Spring Data JPADatabaseOracle DBFrontendThymeleaf, CSS (다크/라이트 테마)기타Lombok, JPA Auditing, Multipart 파일 업로드, Interceptor
 
-프로젝트 구조
+📁 프로젝트 구조
 src/main/
 ├── java/com/example/
 │   ├── Exam2Application.java         @EnableJpaAuditing
@@ -65,7 +65,7 @@ src/main/
         └── review/
             └── modify.html
 
-DB 설계
+🗄 DB 설계
 tbl_movie_members (회원)
 컬럼타입설명usernameVARCHAR(20) PK아이디passwordVARCHAR(20)비밀번호nicknameVARCHAR(20)닉네임user_roleVARCHAR(10)USER / ADMIN
 tbl_movies (영화)
@@ -73,10 +73,10 @@ tbl_movies (영화)
 tbl_reviews (리뷰)
 컬럼타입설명rnoNUMBER PK자동 생성scoreNUMBER평점 1~5contentVARCHAR(500)한줄평movie_idNUMBER FK영화 참조writerVARCHAR(20) FK회원 참조reg_dateDATE작성일 (자동)modify_dateDATE수정일 (자동)
 
-URL 매핑
+🔗 URL 매핑
 URL메서드기능권한/GET메인 페이지누구나/member/regGET/POST회원가입누구나/member/loginGET/POST로그인누구나/member/logoutGET로그아웃누구나/member/mypageGET내 정보 + 내 리뷰 목록로그인/member/edit/nicknamePOST닉네임 변경로그인/member/edit/passwordPOST비밀번호 변경로그인/movie/listGET목록 + 검색 + 페이징누구나/movie/detailGET상세 + 리뷰 목록누구나/movie/regGET/POST영화 등록ADMIN/movie/modifyGET/POST영화 수정ADMIN/movie/deletePOST영화 삭제ADMIN/review/writePOST리뷰 작성로그인/review/modifyGET/POST리뷰 수정본인만/review/deletePOST리뷰 삭제본인만
 
-주요 기능
+✨ 주요 기능
 회원 관리
 
 회원가입 / 로그인 / 로그아웃
@@ -120,7 +120,12 @@ localStorage에 선택 저장, theme.js를 CSS 전에 로드해 FOUC 방지
 form의 hidden 필드로 writer를 받으면 사용자가 값을 임의로 조작할 수 있어 컨트롤러에서 세션으로 직접 꺼내 set하는 방식으로 변경했습니다.
 javaMemberEntity loginUser = (MemberEntity) session.getAttribute("loginUser");
 dto.setWriter(loginUser.getUsername());
-
+평균 평점 계산 방식
+@Query 어노테이션을 사용하지 않고 리뷰 목록 Stream으로 직접 계산했습니다. 상세 페이지에서는 리뷰 목록을 한 번만 조회하고 같은 리스트로 평균도 계산해 쿼리 횟수를 최소화했습니다.
+javaprivate Double calcAvg(List<ReviewEntity> reviews) {
+    if (reviews == null || reviews.isEmpty()) return null;
+    return reviews.stream().mapToInt(ReviewEntity::getScore).average().orElse(0);
+}
 Thymeleaf 프래그먼트 활용
 반복되는 HTML 요소를 프래그먼트로 분리해 중복을 최소화했습니다.
 프래그먼트적용된 곳siteHeader모든 페이지movieFormFields영화 등록 / 수정scoreSelect리뷰 작성 / 수정genre영화 등록 / 수정pagination영화 목록
