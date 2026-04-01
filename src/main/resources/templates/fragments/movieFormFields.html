@@ -32,14 +32,11 @@
 			<textarea name="synopsis" rows="5" th:text="${movie?.synopsis}"></textarea>
 		</div>
 		<div class="form-group">
-			<div th:if="${movie?.poster != null and !movie.poster.isEmpty()}"
-				class="poster-preview mb-12">
-				<img th:src="@{/uploads/{p}(p=${movie.poster})}"
-					th:alt="${movie.title}"> <span>현재 포스터</span>
+			<div th:if="${movie?.poster}" class="current-poster">
+				<p>현재 포스터: [[${movie.poster}]]</p>
 			</div>
-			<label> 포스터 이미지 <span th:if="${movie != null}"
-				class="text-muted text-xs">(변경 시에만 선택)</span>
-			</label> <input type="file" name="poster" accept="image/*">
+			<label>포스터 이미지</label> <input type="file" name="posterFile"
+				accept="image/*">
 		</div>
 	</th:block>
 

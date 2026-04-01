@@ -1,8 +1,8 @@
--- 회원 (user_role은 Role enum 값과 동일하게 USER/ADMIN)
-INSERT INTO tbl_movie_members (username, password, nickname, user_role) VALUES ('admin', '1234', '관리자', 'ADMIN');
-INSERT INTO tbl_movie_members (username, password, nickname, user_role) VALUES ('user1', '1234', '김철수', 'USER');
-INSERT INTO tbl_movie_members (username, password, nickname, user_role) VALUES ('user2', '1234', '이영희', 'USER');
-INSERT INTO tbl_movie_members (username, password, nickname, user_role) VALUES ('user3', '1234', '박민준', 'USER');
+-- 회원 (비밀번호: BCrypt("1234"))
+INSERT INTO tbl_movie_members (username, password, nickname, user_role) VALUES ('admin', '$2b$10$b3PFSiCNEel4g6iSfsxBS.Z/KL3f.Li9jnl5.6cjbc5WkVoykBfNy', '관리자', 'ADMIN');
+INSERT INTO tbl_movie_members (username, password, nickname, user_role) VALUES ('user1', '$2b$10$NpesH7mKhZIfzVJV5umr9.u18Ko6Iw.5pzZo9/mHLe3/rcWkwyGnO', '김철수', 'USER');
+INSERT INTO tbl_movie_members (username, password, nickname, user_role) VALUES ('user2', '$2b$10$9oh9C8wOSB6ADcN8m4HqBO40.Mn1aomQnwqe25MR2rJgPUxhikGw2', '이영희', 'USER');
+INSERT INTO tbl_movie_members (username, password, nickname, user_role) VALUES ('user3', '$2b$10$HMCZcmv0YJqUjletQqRi2eY47PkfRIE.dF36arD2tBGtbBlOcvIIC', '박민준', 'USER');
 
 -- 영화 (mno는 movie_seq 시퀀스로 생성)
 INSERT INTO tbl_movies (mno, title, director, genre, release_year, synopsis, poster, reg_date) VALUES (movie_seq.NEXTVAL, '인터스텔라', '크리스토퍼 놀란', 'SF', 2014, '우주를 통해 인류의 생존을 찾는 탐험을 그린 SF 대작', null, SYSDATE);

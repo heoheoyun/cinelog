@@ -9,6 +9,8 @@
 		<h1 class="page-title">REGISTER</h1>
 
 		<div class="card card-sm mt-24">
+			<div th:if="${error != null}" class="alert alert-error"
+				th:text="${error}"></div>
 			<form th:action="@{/member/reg}" method="post">
 				<div class="form-group">
 					<label>아이디</label> <input type="text" name="username" required>

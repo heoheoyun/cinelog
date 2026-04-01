@@ -15,10 +15,10 @@
 
 | 분류 | 기술 |
 |---|---|
-| Backend | Spring Boot, Spring Data JPA |
+| Backend | Spring Boot 4.0.5, Spring Data JPA, Spring Security |
 | Database | Oracle DB |
 | Frontend | Thymeleaf, CSS (다크/라이트 테마) |
-| 기타 | Lombok, JPA Auditing, Multipart 파일 업로드, Interceptor |
+| 기타 | Lombok, JPA Auditing, Multipart 파일 업로드, Interceptor, BCrypt |
 
 ---
 
@@ -27,9 +27,12 @@
 ```
 src/main/
 ├── java/com/example/
-│   ├── CineLogApplication.java       @EnableJpaAuditing
+│   ├── CineLogApplication.java        @EnableJpaAuditing, @EnableScheduling
+│   ├── auth/
+│   │   └── MemberDetails.java         Security 인증 래퍼
 │   ├── config/
-│   │   └── WebConfig.java            인터셉터 URL 패턴 등록
+│   │   ├── SecurityConfig.java        인증/인가/remember-me 설정
+│   │   └── WebConfig.java             로그 인터셉터 등록
 │   ├── controller/
 │   │   ├── MainController.java
 │   │   ├── MemberController.java
@@ -40,49 +43,56 @@ src/main/
 │   │   ├── MovieDto.java
 │   │   └── ReviewDto.java
 │   ├── entity/
-│   │   ├── MemberEntity.java
-│   │   ├── MovieEntity.java
-│   │   ├── ReviewEntity.java
-│   │   └── Role.java                 USER / ADMIN enum
+│   │   ├── Member.java
+│   │   ├── Movie.java
+│   │   ├── Review.java
+│   │   └── Role.java                  USER / ADMIN enum
 │   ├── interceptor/
-│   │   ├── LoginInterceptor.java     비로그인 요청 차단 (redirect URL 보존)
-│   │   └── AdminInterceptor.java     비ADMIN 요청 차단
+│   │   ├── ActivityLogInterceptor.java  사용자 활동 기록
+│   │   └── ErrorLogInterceptor.java     에러 발생 기록
 │   ├── repository/
 │   │   ├── MemberRepository.java
 │   │   ├── MovieRepository.java
 │   │   └── ReviewRepository.java
 │   ├── service/
-│   │   ├── FileService.java          파일 업로드 공통 처리
+│   │   ├── MemberDetailsService.java  Security UserDetailsService 구현
 │   │   ├── MemberService.java
 │   │   ├── MovieService.java
 │   │   └── ReviewService.java
 │   └── util/
-│       └── PageHandler.java
+│       ├── FileService.java           파일 업로드 공통 처리
+│       ├── PageHandler.java           페이지 네비게이션 계산
+│       └── TokenCleanupScheduler.java 만료 토큰 정리 (매일 새벽 3시)
 │
 └── resources/
     ├── application.properties
     ├── data.sql
+    ├── logback-spring.xml             로그 파일 설정 (logs/app.log)
     ├── static/
     │   ├── css/style.css
     │   └── js/theme.js
     └── templates/
         ├── index.html
+        ├── error/
+        │   ├── 403.html
+        │   ├── 404.html
+        │   └── 500.html
         ├── fragments/
-        │   ├── head.html             CSS + theme.js 로드
-        │   ├── siteHeader.html       헤더 (nav 포함 / 미포함 두 가지)
-        │   ├── genre.html            장르 select options
-        │   ├── scoreSelect.html      평점 select options
-        │   ├── movieFormFields.html  영화 등록/수정 공통 폼 필드
-        │   └── pagination.html       페이지 내비게이션
+        │   ├── genre.html
+        │   ├── head.html
+        │   ├── movieFormFields.html
+        │   ├── pagination.html
+        │   ├── scoreSelect.html
+        │   └── siteHeader.html
         ├── member/
         │   ├── loginForm.html
-        │   ├── regForm.html
-        │   └── myPage.html
+        │   ├── myPage.html
+        │   └── regForm.html
         ├── movie/
-        │   ├── list.html
         │   ├── detail.html
-        │   ├── regForm.html
-        │   └── modify.html
+        │   ├── list.html
+        │   ├── modify.html
+        │   └── regForm.html
         └── review/
             └── modify.html
 ```
@@ -96,15 +106,15 @@ src/main/
 | 컬럼 | 타입 | 설명 |
 |---|---|---|
 | username | VARCHAR(20) PK | 아이디 |
-| password | VARCHAR(20) | 비밀번호 |
+| password | VARCHAR(100) | BCrypt 암호화 비밀번호 |
 | nickname | VARCHAR(20) | 닉네임 |
-| user_role | VARCHAR(10) | USER / ADMIN (Role enum) |
+| user_role | VARCHAR(10) | USER / ADMIN |
 
 ### tbl_movies (영화)
 
 | 컬럼 | 타입 | 설명 |
 |---|---|---|
-| mno | NUMBER PK | movie_seq 시퀀스로 자동 생성 |
+| mno | NUMBER PK | movie_seq 시퀀스 자동 생성 |
 | title | VARCHAR(100) | 제목 |
 | director | VARCHAR(50) | 감독 |
 | genre | VARCHAR(20) | 장르 |
@@ -117,13 +127,24 @@ src/main/
 
 | 컬럼 | 타입 | 설명 |
 |---|---|---|
-| rno | NUMBER PK | review_seq 시퀀스로 자동 생성 |
+| rno | NUMBER PK | review_seq 시퀀스 자동 생성 |
 | score | NUMBER | 평점 1~5 |
 | content | VARCHAR(500) | 한줄평 |
 | movie_id | NUMBER FK | 영화 참조 |
 | writer | VARCHAR(20) FK | 회원 참조 |
 | reg_date | DATE | 작성일 (자동) |
 | modify_date | DATE | 수정일 (자동) |
+
+### persistent_logins (Remember-me 토큰)
+SQL Developer에서 직접 생성 필요:
+```sql
+CREATE TABLE persistent_logins (
+    username  VARCHAR2(64) NOT NULL,
+    series    VARCHAR2(64) PRIMARY KEY,
+    token     VARCHAR2(64) NOT NULL,
+    last_used TIMESTAMP    NOT NULL
+);
+```
 
 ---
 
@@ -133,8 +154,9 @@ src/main/
 |---|---|---|---|
 | `/` | GET | 메인 페이지 | 누구나 |
 | `/member/reg` | GET/POST | 회원가입 | 누구나 |
-| `/member/login` | GET/POST | 로그인 | 누구나 |
-| `/member/logout` | GET | 로그아웃 | 누구나 |
+| `/member/login` | GET | 로그인 폼 | 누구나 |
+| `/member/loginProc` | POST | 로그인 처리 (Security) | 누구나 |
+| `/member/logout` | GET | 로그아웃 (Security) | 누구나 |
 | `/member/mypage` | GET | 내 정보 + 내 리뷰 목록 | 로그인 |
 | `/member/edit/nickname` | POST | 닉네임 변경 | 로그인 |
 | `/member/edit/password` | POST | 비밀번호 변경 | 로그인 |
@@ -152,55 +174,48 @@ src/main/
 ## 주요 기능
 
 ### 회원 관리
-- 회원가입 / 로그인 / 로그아웃
-- Spring Security 없이 `HttpSession`으로 직접 인증 처리
-- ADMIN / USER 역할 구분 (`Role` enum)
-- 중복 아이디 가입 방지
-
-### 내 정보 페이지
-- 닉네임 이니셜 아바타, 역할 배지 표시
-- 닉네임 변경 / 비밀번호 변경 (현재 비밀번호 검증)
-- 내가 쓴 리뷰 목록 조회 및 수정·삭제
+- Spring Security + BCrypt 비밀번호 암호화
+- Remember-me 자동 로그인 (7일, persistent_logins 테이블)
+- ADMIN / USER 역할 구분 (Role enum)
+- 중복 아이디 방지, 입력값 유효성 검증 (@Valid)
 
 ### 영화 관리
-- ADMIN만 영화 등록·수정·삭제 가능
-- 포스터 이미지 업로드 (`FileService`, `UUID_원본파일명` 형식으로 서버 저장)
-- 제목 / 감독 / 통합 키워드 검색 (파생 쿼리 + JPQL `@Query`)
-- 페이징 처리 (`PageHandler` 유틸 클래스)
-- 영화 목록을 4열 카드 그리드로 표시 (반응형)
+- ADMIN만 등록·수정·삭제 가능
+- 포스터 이미지 업로드 (UUID_원본파일명)
+- 제목 / 감독 / 통합 키워드 검색
+- 페이징 처리 (PageHandler)
+- 4열 카드 그리드 UI (반응형)
 
 ### 리뷰 시스템
-- 로그인한 사용자만 리뷰 작성 가능
+- 로그인 사용자만 작성 가능
 - 본인 리뷰만 수정·삭제 가능
 - 평점 1~5점 + 한줄평 (최대 200자)
-- 평균 평점은 `@Query`로 DB에서 직접 계산 (N+1 제거)
-- 마이페이지에서 수정·삭제 시 마이페이지로 복귀 (`from` 파라미터)
+- 평균 평점 @Query N+1 제거
 
-### 인터셉터
-- `LoginInterceptor` — `/member/mypage`, `/member/edit/**`, `/review/**` 차단, 로그인 후 원래 페이지로 자동 복귀
-- `AdminInterceptor` — `/movie/reg`, `/movie/modify`, `/movie/delete` 차단
+### 로그
+- ActivityLogInterceptor: 모든 요청 활동 기록
+- ErrorLogInterceptor: 예외 발생 기록
+- logback-spring.xml: logs/app.log, 날짜별 롤링
 
-### UI 테마
-- 다크 / 라이트 모드 전환 (헤더 🌙☀️ 버튼)
-- `localStorage`에 선택 저장, `theme.js`를 CSS 전에 로드해 FOUC 방지
+### UI
+- 다크 / 라이트 테마 (localStorage 저장, FOUC 방지)
+- 커스텀 에러 페이지 (403, 404, 500)
+
+---
+
+## 구현 시 고민했던 점
+
+### Spring Security 적용
+기존 `LoginInterceptor`, `AdminInterceptor`를 제거하고 `SecurityConfig`의 URL 접근 규칙으로 대체했습니다. 로그인 성공 시 `successHandler`에서 `loginUser` 세션을 직접 저장해 기존 Thymeleaf 템플릿과의 호환성을 유지했습니다.
 
 ### 로그인 후 원래 페이지 복귀
+`SavedRequestAwareAuthenticationSuccessHandler`를 활용해 로그인 전에 접근하려던 URL로 자동 복귀합니다.
 
-`LoginInterceptor`에서 접근 URL을 인코딩해 `redirect` 파라미터로 전달하고, 로그인 성공 시 디코딩해서 원래 페이지로 이동합니다.
+### 평균 평점 N+1 문제 해결
+영화 목록에서 각 영화마다 개별 쿼리 대신 `@Query`로 영화 ID 목록을 한 번에 넘겨 쿼리 1번으로 처리했습니다.
 
-```java
-String encoded = URLEncoder.encode(redirectUrl, StandardCharsets.UTF_8);
-response.sendRedirect("/member/login?redirect=" + encoded);
-```
+### 리뷰 writer 보안 처리
+폼의 hidden 필드 대신 컨트롤러에서 세션으로 직접 꺼내 설정합니다.
 
 ### Thymeleaf 프래그먼트 활용
-
 반복되는 HTML 요소를 프래그먼트로 분리해 중복을 최소화했습니다.
-
-| 프래그먼트 | 적용된 곳 |
-|---|---|
-| `siteHeader` | 모든 페이지 |
-| `movieFormFields` | 영화 등록 / 수정 |
-| `scoreSelect` | 리뷰 작성 / 수정 |
-| `genre` | 영화 등록 / 수정 |
-| `pagination` | 영화 목록 |

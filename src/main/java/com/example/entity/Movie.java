@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-public class MovieEntity {
+public class Movie {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "movie_seq")
@@ -51,7 +51,7 @@ public class MovieEntity {
 	private LocalDate regDate;
 
 	@Builder
-	public MovieEntity(String title, String director, String genre, int releaseYear, String synopsis, String poster) {
+	public Movie(String title, String director, String genre, int releaseYear, String synopsis, String poster) {
 		this.title = title;
 		this.director = director;
 		this.genre = genre;
