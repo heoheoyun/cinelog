@@ -16,25 +16,25 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Member {
 
-    @Id
-    @Column(length = 20)
-    private String username;
+	@Id
+	@Column(length = 20)
+	private String username;
 
-    @Column(nullable = false, length = 100)
-    private String password;
+	@Column(nullable = false, length = 100)
+	private String password;
 
-    @Column(nullable = false, length = 20)
-    private String nickname;
+	@Column(nullable = false, length = 20)
+	private String nickname;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "user_role", nullable = false, length = 10)
-    private Role role;
+	@Enumerated(EnumType.STRING)
+	@Column(name = "user_role", nullable = false, length = 10)
+	private Role role;
 
-    @Builder
-    public Member(String username, String password, String nickname, Role role) {
-        this.username = username;
-        this.password = password;
-        this.nickname = nickname;
-        this.role = role;
-    }
+	@Builder
+	public Member(String username, String password, String nickname, Role role) {
+		this.username = username;
+		this.password = password;
+		this.nickname = nickname;
+		this.role = role;
+	}
 }

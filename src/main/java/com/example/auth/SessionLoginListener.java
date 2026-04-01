@@ -12,15 +12,16 @@ import jakarta.servlet.http.HttpSession;
 @Component
 public class SessionLoginListener implements ApplicationListener<InteractiveAuthenticationSuccessEvent> {
 
-    @Override
-    public void onApplicationEvent(InteractiveAuthenticationSuccessEvent event) {
-        if (!(event.getAuthentication().getPrincipal() instanceof MemberDetails details)) return;
+	@Override
+	public void onApplicationEvent(InteractiveAuthenticationSuccessEvent event) {
+		if (!(event.getAuthentication().getPrincipal() instanceof MemberDetails details))
+			return;
 
-        ServletRequestAttributes attrs =
-                (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        if (attrs == null) return;
+		ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+		if (attrs == null)
+			return;
 
-        HttpSession session = attrs.getRequest().getSession();
-        session.setAttribute("loginUser", details.getMember());
-    }
+		HttpSession session = attrs.getRequest().getSession();
+		session.setAttribute("loginUser", details.getMember());
+	}
 }
